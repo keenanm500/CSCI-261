@@ -34,6 +34,10 @@ public class FindMaxPairsDouble {
         // O(.5n^2) ≈ O(n^2)
         for(int i = sumSet.length - 2; i >= 0; i--) {
             if(sumSet[i + 1] != 0) {
+                
+                // I fundamentally disagree with this solution, but this is how the CS dept wanted it.
+                // Realistically, comparing doubles like this will produce incorrect results: https://www.baeldung.com/java-comparing-doubles
+                // The condition in the line below should be: currentResult - sumSet[i] < 0.00000001
                 if(currentResult == sumSet[i]) {
                     currentCount++;
                 } else {
