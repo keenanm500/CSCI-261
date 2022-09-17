@@ -12,8 +12,8 @@ public class MaxRectangle {
 
         for (int i = 0; i < numberOfPoints; i++) {
             polygon[i] = new Point(scanner.nextInt(), scanner.nextInt());
-            if(polygon[i].getY() > maxY) {
-                maxY = polygon[i].getY();
+            if(polygon[i].y > maxY) {
+                maxY = polygon[i].y;
             }
         }
 
@@ -21,40 +21,50 @@ public class MaxRectangle {
     }
     
     private static int maxRectangleArea(Point[] polygon, int maxY) {
-        
+
         int maxArea = 0;
-        Ceiling[] openCeilings = new Ceiling[maxY + 1];
-        
-        boolean travellingVertically = false;
+        int[] open = new int[maxY + 1];
+
         int previousY = 0;
-        
-        for (Point point : polygon) {
-            
-            if (travellingVertically) {
-                // traveling up
-                if (point.getY() > previousY) {
-                    for (int i = previousY + 1; i <= point.getY(); i++) {
-                        // open a new ceiling
-                        openCeilings[i] = new Ceiling(point.getX(), i);
-                    }
+
+        for (int j = 1; j < polygon.length; j+=2) {
+            int currentX = polygon[j].x;
+            int currentY = polygon[j].y;
+
+            // traveling up
+            if (currentY > previousY) {
+                for (int i = previousY + 1; i <= currentY; i++) {
+                    // open a new rectangle
+                    open[i] = currentX;
                 }
-                // traveling down
-                else {
-                    for (int i = previousY; i > point.getY(); i--) {
-                        // close the ceiling
-                        openCeilings[i].setEndX(point.getX());
-                        if (openCeilings[i].getArea() > maxArea) {
-                            maxArea = openCeilings[i].getArea();
-                        }
+            }
+            // traveling down
+            else {
+                for (int i = previousY; i > currentY; i--) {
+                    // check the rectangle
+                    int res = (currentX - open[i])*i;
+                    if (res > maxArea) {
+                        maxArea = res;
                     }
                 }
             }
-        
-            travellingVertically = !travellingVertically;
-            previousY = point.getY();
+
+            previousY = currentY;
         }
         
         return maxArea;
     }
     
+}
+
+class Point {
+
+    int x = 0;
+    int y = 0;
+
+    public Point(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
 }
