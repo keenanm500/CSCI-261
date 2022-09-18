@@ -3,68 +3,72 @@ import java.util.Scanner;
 public class MaxRectangle {
 
     public static void main(String[] args) {
-
         Scanner scanner = new Scanner(System.in);
         int numberOfPoints = scanner.nextInt();
-        Point[] polygon = new Point[numberOfPoints];
+        int[] xValues = new int[numberOfPoints];
+        int[] yValues = new int[numberOfPoints];
         
-        int maxY = 0;
-
+        int maxX = 0;
         for (int i = 0; i < numberOfPoints; i++) {
-            polygon[i] = new Point(scanner.nextInt(), scanner.nextInt());
-            if(polygon[i].y > maxY) {
-                maxY = polygon[i].y;
-            }
+            xValues[i] = scanner.nextInt();
+            yValues[i] = scanner.nextInt();
+            maxX = xValues[i];
         }
 
-        System.out.println(maxRectangleArea(polygon, maxY));
+        // create and fill in a bar-graph representing the polygon
+        int[] graph = new int[maxX + 1];
+        int lastX = 0;
+        for (int i = 0; i < numberOfPoints; i++) {
+            int currentY = yValues[i];
+            int currentX = xValues[i];
+
+            for (int j = lastX; j < currentX; j++) {
+                graph[j] = currentY;
+            }
+            lastX = currentX;
+        }
+
+        System.out.println(maxRectangleArea(graph, maxX));
     }
-    
-    private static int maxRectangleArea(Point[] polygon, int maxY) {
 
-        int maxArea = 0;
-        int[] open = new int[maxY + 1];
+    private static int maxRectangleArea(int[] graph, int maxX) {
 
-        int previousY = 0;
+        int stackIndex = 0;
+        int[] stack = new int[maxX];
 
-        for (int j = 1; j < polygon.length; j+=2) {
-            int currentX = polygon[j].x;
-            int currentY = polygon[j].y;
-
-            // traveling up
-            if (currentY > previousY) {
-                for (int i = previousY + 1; i <= currentY; i++) {
-                    // open a new rectangle
-                    open[i] = currentX;
-                }
+        // add the first bar to the stack
+        stack[stackIndex++] = -1;
+        int leftSupport[] = new int[maxX + 1];
+        int rightSupport[] = new int[maxX + 1];
+        for (int i = 0; i < maxX; i++){
+            leftSupport[i] = -1;
+            rightSupport[i] = maxX;
+        }
+        
+        int i = 0;
+        // iterate over every bar in the graph
+        while (i < maxX) {
+            while (stackIndex >= 0 && stack[stackIndex] != -1 && graph[i] < graph[stack[stackIndex]]) {
+                rightSupport[stack[stackIndex--]] = i;
             }
-            // traveling down
-            else {
-                for (int i = previousY; i > currentY; i--) {
-                    // check the rectangle
-                    int res = (currentX - open[i])*i;
-                    if (res > maxArea) {
-                        maxArea = res;
-                    }
-                }
+            if (i > 0 && graph[i] == graph[i-1]) {
+                leftSupport[i] = leftSupport[i-1];
+            } else {
+                leftSupport[i] = stack[stackIndex];
             }
+            
+            stack[1 + stackIndex++] = i;
+            i++;
+        }
 
-            previousY = currentY;
+        int maxArea = graph[0];
+        for (int j = 0; j < maxX; j++) {
+            int result = graph[j]*(rightSupport[j] - leftSupport[j] - 1);
+            if(result > maxArea) {
+                maxArea = result;
+            }
         }
         
         return maxArea;
     }
-    
-}
-
-class Point {
-
-    int x = 0;
-    int y = 0;
-
-    public Point(int x, int y) {
-        this.x = x;
-        this.y = y;
-    }
-
 }
