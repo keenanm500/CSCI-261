@@ -36,6 +36,7 @@ public class MaxRectangle {
 
     private static int maxRectangleArea(int[] graph) {
 
+        int maxArea = graph[0];
         int maxX = graph.length - 1;
         
         int openIndex = 0;
@@ -44,34 +45,28 @@ public class MaxRectangle {
         // add a fake first bar to the open-stack
         open[openIndex++] = -1;
         int[] leftSupportOfIndex = new int[maxX + 1];
-        int[] rightSupportOfIndex = new int[maxX + 1];
         for (int i = 0; i < maxX; i++){
             leftSupportOfIndex[i] = -1;
-            rightSupportOfIndex[i] = maxX;
+            //todo can i remove this?
         }
         
         // iterate over every bar in the graph
-        for(int i = 0; i < maxX; i++) {
+        for(int i = 0; i <= maxX; i++) {
             while (openIndex >= 0 && open[openIndex] != -1 && graph[i] < graph[open[openIndex]]) {
-                // once we start going down, close off anything on the open-stack 
-                // that is greater than our current y position
-                rightSupportOfIndex[open[openIndex--]] = i;
+                // once we start going down, close off anything on the open-stack that is
+                // greater than our current y position - record it if is the new maximum area
+                int result = graph[open[openIndex]]*(i - leftSupportOfIndex[open[openIndex]] - 1);
+                openIndex--;
+                if(result > maxArea) {
+                    maxArea = result;
+                }
+                
             }
             // we can simply close the left side with the highest still-open value
             leftSupportOfIndex[i] = open[openIndex];
             
             // add this value to the open-stack as it will be the left-support of future values
             open[1 + openIndex++] = i;
-        }
-
-        int maxArea = graph[0];
-        for (int i = 0; i < maxX; i++) {
-            int result = graph[i] * // height of rectangle
-                        (rightSupportOfIndex[i] - leftSupportOfIndex[i] - 1); // width of rectangle
-            // '-1' is because the right and left supports are inclusive of bars that don't contribute to this rectangle
-            if(result > maxArea) {
-                maxArea = result;
-            }
         }
         
         return maxArea;
