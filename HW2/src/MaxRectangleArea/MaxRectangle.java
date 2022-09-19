@@ -40,15 +40,9 @@ public class MaxRectangle {
         int maxX = graph.length - 1;
         
         int openIndex = 0;
-        int[] open = new int[maxX*maxX];
-
-        // add a fake first bar to the open-stack
-        open[openIndex++] = -1;
+        int[] open = new int[maxX*2];
+        
         int[] leftSupportOfIndex = new int[maxX + 1];
-        for (int i = 0; i < maxX; i++){
-            leftSupportOfIndex[i] = -1;
-            //todo can i remove this?
-        }
         
         // iterate over every bar in the graph
         for(int i = 0; i <= maxX; i++) {
@@ -60,7 +54,6 @@ public class MaxRectangle {
                 if(result > maxArea) {
                     maxArea = result;
                 }
-                
             }
             // we can simply close the left side with the highest still-open value
             leftSupportOfIndex[i] = open[openIndex];
