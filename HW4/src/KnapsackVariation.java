@@ -1,5 +1,3 @@
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
-
 import java.util.Scanner;
 
 public class KnapsackVariation {
@@ -36,17 +34,18 @@ public class KnapsackVariation {
         for (int j = 1; j < n + 1; j++) {
             for (int i = 1; i <= W2; i++) {
                 OPT[j][i] = OPT[j - 1][i];
-                if (w[j] <= i && OPT[j - 1][i - w[j]].value + v[j] > OPT[j][i].value) {
+                if (w[j] <= i && 
+                        (OPT[j - 1][i - w[j]].value + v[j] > OPT[j][i].value && 
+                        OPT[j - 1][i - w[j]].weight + w[j] >= OPT[j][i].weight)) {
                     OPT[j][i] = new Knapsack(OPT[j - 1][i - w[j]], v[j], w[j]);
                 }
-
             }
         }
         System.out.println();
         for (int r = 0; r < OPT.length; r++) {       //for loop for row iteration.
             for (int c = 0; c < OPT[r].length; c++) {   //for loop for column iteration.
                 if (OPT[r][c] != null) {
-                    System.out.print(OPT[r][c].totalWeight + "-" + OPT[r][c].value + " ");
+                    System.out.print(OPT[r][c].weight + "-" + OPT[r][c].value + " ");
                 } else {
                     System.out.print("N N ");
                 }
@@ -58,7 +57,7 @@ public class KnapsackVariation {
         int result = 0;
         for (int i = 0; i < OPT.length; i++) {
             for (int j = 0; j < OPT[i].length; j++) {
-                if (OPT[i][j] != null && OPT[i][j].value > result && OPT[i][j].totalWeight >= W1) {
+                if (OPT[i][j] != null && OPT[i][j].value > result && OPT[i][j].weight >= W1) {
                     result = OPT[i][j].value;
                 }
             }
@@ -66,18 +65,55 @@ public class KnapsackVariation {
         return result;
 
     }
+
+    private static int[] mergeSort(int[] array) {
+        int n = array.length;
+        if(n < 2) {
+            return array;
+        }
+
+        int firstHalfIndex = 0;
+        int secondHalfIndex = 0;
+        int[] firstHalf = new int[n/2];
+        int[] secondHalf = new int[n - n/2];
+        for (int i = 0; i < n/2; i++) {
+            firstHalf[firstHalfIndex++] = array[i];
+        }
+        for (int i = n/2; i < n; i++) {
+            secondHalf[secondHalfIndex++] = array[i];
+        }
+
+        return merge(mergeSort(firstHalf), mergeSort(secondHalf));
+    }
+
+    private static int[] merge(int[] a, int[] b) {
+        int aIndex = 0;
+        int bIndex = 0;
+        int resultIndex = 0;
+        int[] result = new int[a.length + b.length];
+
+        while (aIndex < a.length || bIndex < b.length) {
+            if (b.length <= bIndex || (a.length > aIndex && a[aIndex] <= b[bIndex])) {
+                result[resultIndex++] = b[bIndex++];
+            } else {
+                result[resultIndex++] = a[aIndex++];
+            }
+        }
+        return result;
+    }
 }
+
 class Knapsack {
     int value = 0;
-    int totalWeight = 0;
+    int weight = 0;
 
-    Knapsack(int value, int totalWeight) {
+    Knapsack(int value, int weight) {
         this.value = value;
-        this.totalWeight = totalWeight;
+        this.weight = weight;
     }
 
     Knapsack(Knapsack knapsack, int addedValue, int addedWeight) {
         this.value = knapsack.value + addedValue;
-        this.totalWeight = knapsack.totalWeight + addedWeight;
+        this.weight = knapsack.weight + addedWeight;
     }
 }
