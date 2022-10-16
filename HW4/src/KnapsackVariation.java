@@ -8,65 +8,77 @@ public class KnapsackVariation {
         int n = scanner.nextInt();
         int w = scanner.nextInt();
         int W = scanner.nextInt();
+        
+        Knapsack[] knapsacks = new Knapsack[n];
         int[] wt = new int[n + 1];
         int[] val = new int[n + 1];
         wt[0] = 0;
         val[0] = 0;
-        for (int i = 1; i <= n; i++) {
-            wt[i] = scanner.nextInt();
-            val[i] = scanner.nextInt();
+        for (int i = 0; i < n; i++) {
+            int weight = scanner.nextInt();
+            int value = scanner.nextInt();
+            knapsacks[i] = new Knapsack(i + 1, value, weight);
         }
-        // wt = mergeSort(wt, val);
-        System.out.println(knapsackDP(w, W, wt, val, n));
+        knapsacks = mergeSort(knapsacks);
+        wt[0] = 0;
+        val[0] = 0;
+
+        Knapsack[] augmentedKnapsacks = new Knapsack[n + 1];
+        augmentedKnapsacks[0] = new Knapsack(-1, 0, 0);
+        for (int i = 1; i <= n; i++) {
+            augmentedKnapsacks[i] = knapsacks[i - 1];
+        }
+        findBestLegalKnapsack(w, W, augmentedKnapsacks, n);
     }
 
-    private static int knapsackDP(int W1, int W2, int[] w, int[] v, int n) {
-        if (n <= 0 || W2 <= 0) {
-            return 0;
+    private static void findBestLegalKnapsack(int w, int W, Knapsack[] objects, int n) {
+        if (n <= 0 || W <= 0) {
+            System.out.println("-1");
+            return;
         }
 
-        Knapsack[][] OPT = new Knapsack[n + 1][W2 + 1];
+        Knapsack[][] OPT = new Knapsack[n + 1][W + 1];
         for (int i = 0; i <= n; i++) {
-            for (int j = 0; j <= W2; j++) {
-                OPT[i][j] = new Knapsack(0, 0);
+            for (int j = 0; j <= W; j++) {
+                OPT[i][j] = new Knapsack(-1, 0, 0);
             }
         }
         for (int j = 1; j < n + 1; j++) {
-            for (int i = 1; i <= W2; i++) {
+            for (int i = 1; i <= W; i++) {
                 OPT[j][i] = OPT[j - 1][i];
-                if (w[j] <= i && 
-                        (OPT[j - 1][i - w[j]].value + v[j] > OPT[j][i].value && 
-                        OPT[j - 1][i - w[j]].weight + w[j] >= OPT[j][i].weight)) {
-                    OPT[j][i] = new Knapsack(OPT[j - 1][i - w[j]], v[j], w[j]);
+                if (objects[j].weight <= i && 
+                        (OPT[j - 1][i - objects[j].weight].value + objects[j].value > OPT[j][i].value && 
+                        OPT[j - 1][i - objects[j].weight].weight + objects[j].weight >= OPT[j][i].weight)) {
+                    OPT[j][i] = new Knapsack(OPT[j - 1][i - objects[j].weight], objects[j].value, objects[j].weight);
                 }
             }
-        }
-        System.out.println();
-        for (int r = 0; r < OPT.length; r++) {       //for loop for row iteration.
-            for (int c = 0; c < OPT[r].length; c++) {   //for loop for column iteration.
-                if (OPT[r][c] != null) {
-                    System.out.print(OPT[r][c].weight + "-" + OPT[r][c].value + " ");
-                } else {
-                    System.out.print("N N ");
-                }
-            }
-            System.out.println(); //using this for new line to print array in matrix format.
         }
 
         // get max knapsack with min weight
+        Knapsack next = null;
         int result = 0;
         for (int i = 0; i < OPT.length; i++) {
             for (int j = 0; j < OPT[i].length; j++) {
-                if (OPT[i][j] != null && OPT[i][j].value > result && OPT[i][j].weight >= W1) {
+                if (OPT[i][j] != null && OPT[i][j].value > result && OPT[i][j].weight >= w) {
                     result = OPT[i][j].value;
+                    next = OPT[i][j];
                 }
             }
         }
-        return result;
+
+        if(result == 0) {
+            result = -1;
+        }
+        System.out.println(result);
+        
+        int[] ids = new int[OPT.length];
+        //while(next != null) {
+            
+        //}
 
     }
 
-    private static int[] mergeSort(int[] array) {
+    private static Knapsack[] mergeSort(Knapsack[] array) {
         int n = array.length;
         if(n < 2) {
             return array;
@@ -74,8 +86,8 @@ public class KnapsackVariation {
 
         int firstHalfIndex = 0;
         int secondHalfIndex = 0;
-        int[] firstHalf = new int[n/2];
-        int[] secondHalf = new int[n - n/2];
+        Knapsack[] firstHalf = new Knapsack[n/2];
+        Knapsack[] secondHalf = new Knapsack[n - n/2];
         for (int i = 0; i < n/2; i++) {
             firstHalf[firstHalfIndex++] = array[i];
         }
@@ -86,17 +98,17 @@ public class KnapsackVariation {
         return merge(mergeSort(firstHalf), mergeSort(secondHalf));
     }
 
-    private static int[] merge(int[] a, int[] b) {
+    private static Knapsack[] merge(Knapsack[] a, Knapsack[] b) {
         int aIndex = 0;
         int bIndex = 0;
         int resultIndex = 0;
-        int[] result = new int[a.length + b.length];
+        Knapsack[] result = new Knapsack[a.length + b.length];
 
         while (aIndex < a.length || bIndex < b.length) {
-            if (b.length <= bIndex || (a.length > aIndex && a[aIndex] <= b[bIndex])) {
-                result[resultIndex++] = b[bIndex++];
-            } else {
+            if (b.length <= bIndex || (a.length > aIndex && a[aIndex].weight > b[bIndex].weight)) {
                 result[resultIndex++] = a[aIndex++];
+            } else {
+                result[resultIndex++] = b[bIndex++];
             }
         }
         return result;
@@ -104,15 +116,18 @@ public class KnapsackVariation {
 }
 
 class Knapsack {
+    int id = 0;
     int value = 0;
     int weight = 0;
 
-    Knapsack(int value, int weight) {
+    Knapsack(int id, int value, int weight) {
+        this.id = id;
         this.value = value;
         this.weight = weight;
     }
 
     Knapsack(Knapsack knapsack, int addedValue, int addedWeight) {
+        this.id = -1;
         this.value = knapsack.value + addedValue;
         this.weight = knapsack.weight + addedWeight;
     }
