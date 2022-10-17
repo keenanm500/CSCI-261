@@ -13,26 +13,44 @@ public class LongestKindOfIncreasingSubsequence {
             numbers[i] = scanner.nextInt();
         }
 
-        int[] OPT = new int[inputLength];
+        // [final element][previous element]
+//        int[][] OPT = new int[inputLength][inputLength];
+//        for (int i = 0; i < inputLength; i++) {
+//            for (int j = 0; j < i; j++) {
+//                for (int k = 0; k < j; k++) {
+//
+//                    int previousAvg = (numbers[k] + numbers[j])/2;
+//                    if(previousAvg < numbers[i] && OPT[i][j] <= OPT[i][k]) {
+//                        OPT[i][j] = OPT[i][k] + 1;
+//                        k++;
+//                    }
+//                }
+//            }
+//        }
+
+        int[][] OPT = new int[inputLength][inputLength];
         for (int i = 0; i < inputLength; i++) {
-            OPT[i] = 1;
-            for (int j = 1; j < i; j++) {
-                int previousAvg = (numbers[j - 1] + numbers[j])/2;
-                if(previousAvg < numbers[i] && OPT[i] <= OPT[j]) {
-                    if(OPT[j] == 1) {
-                        OPT[j]++;
+            for (int j = i; j > 0; j--) {
+                for (int k = j; k < i; k++) {
+
+                    int previousAvg = (numbers[j] + numbers[k])/2;
+                    if(previousAvg < numbers[i] && OPT[i][k] <= OPT[i][j]) {
+                        OPT[i][k] = OPT[i][j] + 1;
+                        
                     }
-                    OPT[i] = OPT[j] + 1;
                 }
             }
         }
 
         int result = 0;
-        for (int j : OPT) {
-            if (j > result) {
-                result = j;
+        for (int i = 0; i < OPT.length; i++) {
+            for (int j = 0; j < OPT[i].length; j++) {
+                if(result < OPT[i][j]) {
+                    result = OPT[i][j];
+                }
             }
         }
+
         
         System.out.println(result);
     }

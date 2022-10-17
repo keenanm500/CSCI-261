@@ -1,5 +1,3 @@
-package AllWhiteSquare;
-
 import java.util.Scanner;
 
 public class AllWhiteSquare {
