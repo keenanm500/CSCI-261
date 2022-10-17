@@ -43,10 +43,10 @@ public class LongestKindOfIncreasingSubsequence {
         }
 
         int result = 0;
-        for (int i = 0; i < OPT.length; i++) {
-            for (int j = 0; j < OPT[i].length; j++) {
-                if(result < OPT[i][j]) {
-                    result = OPT[i][j];
+        for (int[] ints : OPT) {
+            for (int j = 0; j < ints.length; j++) {
+                if (result < ints[j]) {
+                    result = ints[j];
                 }
             }
         }
