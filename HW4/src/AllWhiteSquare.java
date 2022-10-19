@@ -5,23 +5,19 @@ public class AllWhiteSquare {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         int inputLength = scanner.nextInt();
-        boolean[][] square = new boolean[inputLength][inputLength];
-
-        String buffer = "";
-        for(int i = 0; i <= inputLength; i++) {
-            buffer += scanner.nextLine();
-        }
+        int[][] square = new int[inputLength][inputLength];
         
-        // read in sequence of numbers
-        for (int i = 0; i < inputLength; i++) {
+        for(int i = 0; i < inputLength; i++) {
+            String buffer = scanner.next();
             for (int j = 0; j < inputLength; j++) {
-                boolean white = false;
-                if(buffer.charAt(i * inputLength + j) == 'w') {
-                    white = true;
+                int white = 0;
+                if(buffer.charAt(j) == 'w') {
+                    white = 1;
                 }
                 square[i][j] = white;
             }
         }
+        
         findBiggestSquare(square);
     }
 
@@ -35,30 +31,16 @@ public class AllWhiteSquare {
         }
     }
 
-    public static void findBiggestSquare(boolean[][] square) {
-
-        int[][] OPT = new int[square.length][square.length];
-
-        for (int i = 0; i < square.length; i++) {
-            for (int j = 0; j < square.length; j++) {
-                if(square[i][j]) {
-                    OPT[i][j] = 1;
-                    if((i > 0 && j > 0) && OPT[i - 1][j - 1] == OPT[i - 1][j] && OPT[i - 1][j - 1] == OPT[i][j - 1]) {
-                        OPT[i][j] = OPT[i - 1][j - 1] + 1;
-                    } else if(i > 0 && j > 0){
-                        OPT[i][j] = min(OPT[i - 1][j], OPT[i][j - 1], OPT[i - 1][j - 1]) + 1;
-                    }
-                } else {
-                    OPT[i][j] = 0;
-                }
-            }
-        }
+    public static void findBiggestSquare(int[][] OPT) {
 
         int result = 0;
-        for (int[] i : OPT) {
-            for(int j : i) {
-                if (j > result) {
-                    result = j;
+        for (int i = 0; i < OPT.length; i++) {
+            for (int j = 0; j < OPT.length; j++) {
+                if(OPT[i][j] != 0 && i > 0 && j > 0) {
+                    OPT[i][j] = min(OPT[i - 1][j - 1], OPT[i - 1][j], OPT[i][j - 1]) + 1;
+                    if(OPT[i][j] > result) {
+                        result = OPT[i][j];
+                    }
                 }
             }
         }
