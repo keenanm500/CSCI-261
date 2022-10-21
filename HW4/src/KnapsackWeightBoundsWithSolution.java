@@ -27,14 +27,19 @@ public class KnapsackWeightBoundsWithSolution {
         
         int[][] OPT = new int[n + 1][W + 1];
         for (int i = 0; i <= n; i++) {
-            for (int j = 0; j <= n; j++) {
-                OPT[i][j] = 0;
+            for (int j = 0; j <= W; j++) {
+                try {
+                OPT[i][j] = 0; 
+                } catch (Exception e) {
+                    System.out.println(); 
+                }
+                
             }
         }
 
         int[][] WeightOPT = new int[n + 1][W + 1];
         for (int i = 0; i <= n; i++) {
-            for (int j = 0; j <= n; j++) {
+            for (int j = 0; j <= W; j++) {
                 WeightOPT[i][j] = 0;
             }
         }
@@ -44,6 +49,7 @@ public class KnapsackWeightBoundsWithSolution {
                 if(j == 0) {
                     if(weights[j] == v) {
                         OPT[j][v] = values[j];
+                        WeightOPT[j][v] = weights[j];
                     }
                 } else {
                     if (weights[j] > v) {
@@ -80,6 +86,7 @@ public class KnapsackWeightBoundsWithSolution {
         }
 
         int[] ids = new int[OPT.length];
+
         int idsIterator = 0;
         while(currentI > 0) {
             if(OPT[currentI - 1][currentJ] != OPT[currentI][currentJ]){
@@ -88,6 +95,10 @@ public class KnapsackWeightBoundsWithSolution {
                 currentI--;
             } else {
                 currentI--;
+            }
+            
+            if(currentI == 0 && currentJ != 0) {
+                ids[idsIterator] = 1;
             }
         }
 
