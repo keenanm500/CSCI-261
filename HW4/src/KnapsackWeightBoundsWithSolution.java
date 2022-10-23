@@ -17,23 +17,18 @@ public class KnapsackWeightBoundsWithSolution {
         }
         
         findBestKnapsack(w, W, wt, val, n);
-        // findBestLegalKnapsack(w, W, augmentedKnapsacks, n);
     }
     
     private static void findBestKnapsack(int w, int W, int[] weights, int[] values, int n) {
         if(n <= 0 || W <= 0) {
+            System.out.println(-1);
             return;
         }
         
         int[][] OPT = new int[n + 1][W + 1];
         for (int i = 0; i <= n; i++) {
             for (int j = 0; j <= W; j++) {
-                try {
-                OPT[i][j] = 0; 
-                } catch (Exception e) {
-                    System.out.println(); 
-                }
-                
+                OPT[i][j] = 0;
             }
         }
 
@@ -92,11 +87,9 @@ public class KnapsackWeightBoundsWithSolution {
             if(OPT[currentI - 1][currentJ] != OPT[currentI][currentJ]){
                 ids[idsIterator++] = currentI + 1;
                 currentJ -= weights[currentI];
-                currentI--;
-            } else {
-                currentI--;
             }
-            
+            currentI--;
+
             if(currentI == 0 && currentJ != 0) {
                 ids[idsIterator] = 1;
             }
