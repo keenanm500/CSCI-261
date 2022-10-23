@@ -51,18 +51,18 @@ public class KnapsackWeightBoundsWithSolution {
                     if (weights[j] > v) {
                         OPT[j][v] = OPT[j - 1][v];
                         WeightOPT[j][v] = WeightOPT[j - 1][v];
+                        continue;
+                    }
+                    int temp = -1;
+                    if (WeightOPT[j - 1][v - weights[j]] + weights[j] == v) {
+                        temp = OPT[j - 1][v - weights[j]] + costs[j];
+                    }
+                    if (temp >= OPT[j - 1][v]) {
+                        OPT[j][v] = temp;
+                        WeightOPT[j][v] = WeightOPT[j - 1][v - weights[j]] + weights[j];
                     } else {
-                        int temp = -1;
-                        if (WeightOPT[j - 1][v - weights[j]] + weights[j] == v) {
-                            temp = OPT[j - 1][v - weights[j]] + costs[j];
-                        }
-                        if (temp >= OPT[j - 1][v]) {
-                            OPT[j][v] = temp;
-                            WeightOPT[j][v] = WeightOPT[j - 1][v - weights[j]] + weights[j];
-                        } else {
-                            OPT[j][v] = OPT[j - 1][v];
-                            WeightOPT[j][v] = WeightOPT[j - 1][v];
-                        }
+                        OPT[j][v] = OPT[j - 1][v];
+                        WeightOPT[j][v] = WeightOPT[j - 1][v];
                     }
                 }
             }
